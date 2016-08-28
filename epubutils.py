@@ -10,7 +10,13 @@ class EpubFile:
 		# TODO need to add in error handling
 		
 	def giveTextList(self):
-		textFiles = [file for file in self.zipFile.namelist() if file.startswith('OEBPS/Text/')]
+		textFiles = []
+
+		for file in self.zipFile.namelist():
+			if file.startswith('OEBPS'):
+				validContentExtensions = ['xhtml', 'htm', 'html']
+				if file.split('.')[-1] in validContentExtensions:
+					textFiles.append(file)
 
 		textAndFileNames = []
 		for textFile in textFiles:
@@ -24,4 +30,4 @@ class EpubFile:
 
 			textAndFileNames.append( (textFile, allText) )
 
-		return textAndFileNames
+		return textAndFileNames 
