@@ -5,4 +5,23 @@ from zipfile import ZipFile
 
 class EpubFile:
 	def __init__(self, fname):
-		zipFile = ZipFile(fname, 'r')
+		self.zipFile = ZipFile(fname, 'r')
+
+		# TODO need to add in error handling
+		
+	def giveTextList(self):
+		textFiles = [file for file in self.zipFile.namelist() if file.startswith('OEBPS/Text/')]
+
+		textAndFileNames = []
+		for textFile in textFiles:
+			text = self.zipFile.read(textFile)
+			textSoup = BS(text, 'html.parser')
+
+			# get all the text from the '<p>' elements
+			allText = ""
+			for p in textSoup.findAll('p'):
+				allText += p.text + '\n\n'
+
+			textAndFileNames.append( (textFile, allText) )
+
+		return textAndFileNames
