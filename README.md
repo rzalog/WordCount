@@ -1,0 +1,1 @@
+Allows word counting and related statistics of epub files.
