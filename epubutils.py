@@ -13,10 +13,9 @@ class EpubFile:
 		textFiles = []
 
 		for file in self.zipFile.namelist():
-			if file.startswith('OEBPS'):
-				validContentExtensions = ['xhtml', 'htm', 'html']
-				if file.split('.')[-1] in validContentExtensions:
-					textFiles.append(file)
+			validContentExtensions = ['xhtml', 'htm', 'html']
+			if file.split('.')[-1] in validContentExtensions:
+				textFiles.append(file)
 
 		textAndFileNames = []
 		for textFile in textFiles:
