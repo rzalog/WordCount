@@ -1,39 +1,35 @@
 #!/usr/local/Cellar/python3/3.5.2_1/bin/python3.5
 
+# The actual command line tool to be run
+
 import epubutils
-import sys
+from wordcountutils import *
+import argparse
 
-def countTotalEpubWords(fname):
-	epub = epubutils.EpubFile(fname)
-	totalWords = 0
-	for text in epub.giveTextList():
-		totalWords += countWords(text[1])
-	return totalWords
+def countAllWords(fnames):
+        total = 0
+        for fname in fnames:
+                try:
+                        total += countTotalEpubWords(fname)
+                except FileNotFoundError:
+                        print("The file {} could not be found".format(fname))
+        return total
 
-def countWords(string):
-	return len(string.split(' '))
+def output(fnames, verboseLevel):
+        total = countAllWords(fnames)
+        if verboseLevel == 0:
+                print(total)
+        if verboseLevel > 0:
+                for fname in fnames:
+                        print("{}: {} words".format(fname, countTotalEpubWords(fname)))
+                print("Total: {} words".format(total))
+                
+                        
+parser = argparse.ArgumentParser("Count the number of words in a .EPUB file.")
 
-def stripNonAlpha(string, leaveApostrophes=True):
-	formattedString = ''
-	for char in string:
-		otherValidChars = [' ', '’', '\'']
-		if char.isalpha() or char in otherValidChars:
-			formattedString += char
-		elif char == '\n':
-			formattedString += ' '
-	return formattedString
+parser.add_argument("fnames", nargs='+', help=".EPUB file(s)")
+parser.add_argument("-v", "--verbose", action="count", default=0, help="identify level of verboseness")
 
-if __name__=='__main__':
-	try:
-		fname = sys.argv[1]
-		wordCount = countTotalEpubWords(fname)
-	except IndexError:
-		print("Please provide a .epub filename.")
-		quit()
-	except:
-		print("Something went wrong with opening your file.")
-		quit()
+args = parser.parse_args()
 
-	print("File name: " + fname)
-	print("Total words: %d" % wordCount)
-
+output(args.fnames, args.verbose)
